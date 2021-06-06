@@ -9,14 +9,14 @@ import img2pdf
 from PIL import Image # img2pdfと一緒にインストールされたPillowを使います
 
 
-#実行形式でのpath取得
+#### 実行形式でのpath取得
 path_current_dir = os.path.dirname(sys.argv[0])
 
 # print(sys.argv[0]) 
 # print(path_current_dir)
 
 
-#保存ディレクトリを指定
+#### 保存ディレクトリを指定
 Savedir = path_current_dir + "/capture/"
 Bookname = ""
 
@@ -24,7 +24,7 @@ print('中断するにはCrt+Cを入力してください。')
 
 InFlg = 0
 
-# ファイル名の入力
+#### ファイル名の入力
 while True:
     try:
         Bookname = input("ファイル名を入力してください")
@@ -38,7 +38,7 @@ while True:
     else:
         break
 
-# 座標の取得
+#### 座標の取得
 try:
     while True:
         if InFlg == 0:
@@ -61,7 +61,7 @@ try:
                 InFlg+=1
         
         if InFlg == 3:
-            x=input("Enterを押下し5秒後に開始します\n")
+            x=input("Enterを押下し5秒後に開始します\nキャプチャしたい画面を全面に表示し待機してください。")
             InFlg += 1
 
         if InFlg == 4:
@@ -70,19 +70,11 @@ except KeyboardInterrupt:
     print('\n終了')
     sys.exit()
 
-
-
-# print(XLeftTop,"&",YLeftTop)
-# print(XRightLow,"&",YRightLow)
-
-#キャプチャ範囲の幅と高さを格納
+#### キャプチャ範囲の幅と高さを格納
 Width =  XRightLow - XLeftTop
 Height =  YRightLow - YLeftTop
 
-# print(Width)
-# print(Height)
-
-#実行開始までのwait
+#### 実行開始までのwait
 time.sleep(5)
 
 Pagecount = 1
@@ -96,14 +88,14 @@ while True:
     Fname = Savedir + Bookname + '_' + str(Pagenum) + '.jpg'
     SS.save(Fname)
 
-
+    # 2ページ以降は前回のキャプチャ内容と比較する
     if Pagecount >= 2:
         BeforePagenum = str(Pagecount -1).zfill(4)
         BFname = Savedir + Bookname + '_' + str(BeforePagenum) + '.jpg'
         img_this_page = cv2.imread(Fname)
         img_before_page = cv2.imread(BFname)
 
-        #一回一致したあと、再度確認する
+        # 前回のキャプチャ内容と今回のキャプチャを比較、一致したあと再度比較し終了判定へ
         if np.array_equal(img_this_page,img_before_page):
             os.remove(Fname)
             time.sleep(2)
@@ -113,17 +105,19 @@ while True:
             SS.save(Fname)
             img_this_page = cv2.imread(Fname)
 
+            # キャプチャ終了判定
             if np.array_equal(img_this_page,img_before_page):
                 print("キャプチャ画像が一致したので終了します")
                 os.remove(Fname)
                 break
     
+    BeforeSS = SS
     Pagecount += 1
     gui.press(cursol)
     time.sleep(0.5)
 
 
-##pdf変換
+#### pdf変換
 print("PDF化を開始します")
 
 pdf_FileName = Savedir + Bookname + '.pdf' # 出力するPDFの名前
@@ -135,17 +129,3 @@ with open(pdf_FileName,"wb") as f:
     f.write(img2pdf.convert([Image.open(png_Folder+j).filename for j in os.listdir(png_Folder)if j.endswith(extension)]))
 
 print("PDF化完了しました")
-
-#旧処理
-# for loop in range(0,174):
-#     time.sleep(0.5)
-
-#     # #region = (左からの配置位置, 上からの配置位置, 幅, 高さ)
-#     SS = pyautogui.screenshot(region = (XLeftTop,YLeftTop,Width,Height))
-#     t = Savedir +'独習Python_' + str(loop + 1) + '.png'
-#     SS.save(t)
-
-#     pyautogui.press('right')
-#     #pyautogui.click(XButtonLow,YButtonLow)
-#     time.sleep(0.5)
-
