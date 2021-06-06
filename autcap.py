@@ -85,37 +85,26 @@ while True:
     # #region = (左からの配置位置, 上からの配置位置, 幅, 高さ)
     SS = gui.screenshot(region = (XLeftTop,YLeftTop,Width,Height))
     SS = SS.convert('RGB')
-    Fname = Savedir + Bookname + '_' + str(Pagenum) + '.jpg'
-    SS.save(Fname)
 
-    # 2ページ以降は前回のキャプチャ内容と比較する
+    #### 2ページ以降は前回のキャプチャ内容と比較する
     if Pagecount >= 2:
-        BeforePagenum = str(Pagecount -1).zfill(4)
-        BFname = Savedir + Bookname + '_' + str(BeforePagenum) + '.jpg'
-        img_this_page = cv2.imread(Fname)
-        img_before_page = cv2.imread(BFname)
-
         # 前回のキャプチャ内容と今回のキャプチャを比較、一致したあと再度比較し終了判定へ
-        if np.array_equal(img_this_page,img_before_page):
-            os.remove(Fname)
+        if np.array_equal(SS,BeforeSS):
             time.sleep(2)
             SS = gui.screenshot(region = (XLeftTop,YLeftTop,Width,Height))
             SS = SS.convert('RGB')
-            Fname = Savedir + Bookname + '_' + str(Pagenum) + '.jpg'
-            SS.save(Fname)
-            img_this_page = cv2.imread(Fname)
 
-            # キャプチャ終了判定
-            if np.array_equal(img_this_page,img_before_page):
+            #### キャプチャ終了判定
+            if np.array_equal(SS,BeforeSS):
                 print("キャプチャ画像が一致したので終了します")
-                os.remove(Fname)
                 break
     
+    Fname = Savedir + Bookname + '_' + str(Pagenum) + '.jpg'
+    SS.save(Fname)
     BeforeSS = SS
     Pagecount += 1
     gui.press(cursol)
     time.sleep(0.5)
-
 
 #### pdf変換
 print("PDF化を開始します")
