@@ -88,8 +88,9 @@ while True:
 
     #### 2ページ以降は前回のキャプチャ内容と比較する
     if Pagecount >= 2:
+
         # 前回のキャプチャ内容と今回のキャプチャを比較、一致したあと再度比較し終了判定へ
-        if np.array_equal(SS,BeforeSS):
+        if np.array_equal(SS,BeforeSS):#pylint: disable-this-line-in-some-way
             time.sleep(2)
             SS = gui.screenshot(region = (XLeftTop,YLeftTop,Width,Height))
             SS = SS.convert('RGB')
