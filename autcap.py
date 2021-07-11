@@ -7,17 +7,11 @@ import cv2
 import os
 import img2pdf
 from PIL import Image # img2pdfと一緒にインストールされたPillowを使います
-
+from tkinter import messagebox
 
 #### 実行形式でのpath取得
 path_current_dir = os.path.dirname(sys.argv[0])
 
-# print(sys.argv[0]) 
-# print(path_current_dir)
-
-
-#### 保存ディレクトリを指定
-Savedir = path_current_dir + "/capture/"
 Bookname = ""
 
 print('中断するにはCrt+Cを入力してください。')
@@ -55,20 +49,30 @@ try:
             cursol=input("ページ送り方向を指定してください(→:1 / ←:2)'\n")
             if cursol == "1":
                 cursol = "right"
-                InFlg+=1
+                InFlg += 1
             elif cursol == "2":
                 cursol="left"
-                InFlg+=1
+                InFlg += 1
         
         if InFlg == 3:
+            Fileflg=input("ファイル出力を選択してください(1:PNG 2:Jpeg+PDF)\n")
+            if Fileflg  == "1":
+                InFlg += 1
+            elif Fileflg == "2":
+                InFlg += 1
+
+        if InFlg == 4:
             x=input("Enterを押下し5秒後に開始します\nキャプチャしたい画面を全面に表示し待機してください。")
             InFlg += 1
 
-        if InFlg == 4:
+        if InFlg == 5:
             break
 except KeyboardInterrupt:
     print('\n終了')
     sys.exit()
+
+Savedir = path_current_dir + "/" + Bookname + "/"
+os.mkdir(Savedir)
 
 #### キャプチャ範囲の幅と高さを格納
 Width =  XRightLow - XLeftTop
@@ -84,7 +88,8 @@ while True:
     Pagenum = str(Pagecount).zfill(4)
     # #region = (左からの配置位置, 上からの配置位置, 幅, 高さ)
     SS = gui.screenshot(region = (XLeftTop,YLeftTop,Width,Height))
-    SS = SS.convert('RGB')
+    if Fileflg == "2" :
+        SS = SS.convert('RGB')
 
     #### 2ページ以降は前回のキャプチャ内容と比較する
     if Pagecount >= 2:
@@ -93,29 +98,35 @@ while True:
         if np.array_equal(SS,BeforeSS):#pylint: disable-this-line-in-some-way
             time.sleep(2)
             SS = gui.screenshot(region = (XLeftTop,YLeftTop,Width,Height))
-            SS = SS.convert('RGB')
+            if Fileflg == "2" :
+                SS = SS.convert('RGB')
 
             #### キャプチャ終了判定
             if np.array_equal(SS,BeforeSS):
                 print("キャプチャ画像が一致したので終了します")
                 break
-    
-    Fname = Savedir + Bookname + '_' + str(Pagenum) + '.jpg'
+
+    if Fileflg == "1":
+        Fname = Savedir + Bookname + '_' + str(Pagenum) + '.png'
+    elif Fileflg == "2":
+        Fname = Savedir + Bookname + '_' + str(Pagenum) + '.jpg'
     SS.save(Fname)
     BeforeSS = SS
     Pagecount += 1
     gui.press(cursol)
     time.sleep(0.5)
 
-#### pdf変換
-print("PDF化を開始します")
+if Fileflg =="2":
+    #### pdf変換
+    print("PDF化を開始します")
 
-pdf_FileName = Savedir + Bookname + '.pdf' # 出力するPDFの名前
-png_Folder = Savedir # 画像フォルダ
-extension  = ".jpg" # 拡張子がPNGのものを対象
+    pdf_FileName = Savedir + Bookname + '.pdf' # 出力するPDFの名前
+    png_Folder = Savedir # 画像フォルダ
+    extension  = ".jpg" # 拡張子がPNGのものを対象
 
-with open(pdf_FileName,"wb") as f:
-    # 画像フォルダの中にあるPNGファイルを取得し配列に追加、バイナリ形式でファイルに書き込む
-    f.write(img2pdf.convert([Image.open(png_Folder+j).filename for j in os.listdir(png_Folder)if j.endswith(extension)]))
+    with open(pdf_FileName,"wb") as f:
+        # 画像フォルダの中にあるPNGファイルを取得し配列に追加、バイナリ形式でファイルに書き込む
+        f.write(img2pdf.convert([Image.open(png_Folder+j).filename for j in os.listdir(png_Folder)if j.endswith(extension)]))
 
-print("PDF化完了しました")
+    print("PDF化完了しました")
+messagebox.showinfo("完了", "キャプチャが完了しました")
