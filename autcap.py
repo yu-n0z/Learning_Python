@@ -14,19 +14,19 @@ path_current_dir = os.path.dirname(sys.argv[0])
 
 Bookname = ""
 
-print('中断するにはCrt+Cを入力してください。')
+print('中断するにはCrt+Cを入力してください。\n')
 
 InFlg = 0
 
 #### ファイル名の入力
 while True:
     try:
-        Bookname = input("ファイル名を入力してください")
+        Bookname = input("ファイル名を入力してください\n")
     except ValueError as ex:
         if Bookname == "":
             print(end= "")
         else:
-            print("ファイル名として有効な文字列を入力してください")
+            print("ファイル名として有効な文字列を入力してください\n")
     except TypeError:
         print()
     else:
@@ -62,7 +62,7 @@ try:
                 InFlg += 1
 
         if InFlg == 4:
-            x=input("Enterを押下し5秒後に開始します\nキャプチャしたい画面を全面に表示し待機してください。")
+            x=input("Enterを押下した後、5秒以内にキャプチャしたい画面を全面に表示し待機してください。\n")
             InFlg += 1
 
         if InFlg == 5:
