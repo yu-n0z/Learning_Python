@@ -4,10 +4,10 @@ import sys
 import time
 import numpy as np
 import cv2
-import os
 import img2pdf
 from PIL import Image # img2pdfと一緒にインストールされたPillowを使います
 from tkinter import messagebox
+from natsort import natsorted
 
 #### 実行形式でのpath取得
 path_current_dir = os.path.dirname(sys.argv[0])
@@ -96,7 +96,7 @@ while True:
 
         # 前回のキャプチャ内容と今回のキャプチャを比較、一致したあと再度比較し終了判定へ
         if np.array_equal(SS,BeforeSS):#pylint: disable-this-line-in-some-way
-            time.sleep(2)
+            time.sleep(3)
             SS = gui.screenshot(region = (XLeftTop,YLeftTop,Width,Height))
             if Fileflg == "2" :
                 SS = SS.convert('RGB')
@@ -124,9 +124,20 @@ if Fileflg =="2":
     png_Folder = Savedir # 画像フォルダ
     extension  = ".jpg" # 拡張子がPNGのものを対象
 
+
+    #PDF化ファイルのソート
+    jpg_Finelame = []
+    for i in os.listdir(png_Folder):
+        if i[-3:] == "jpg":
+            jpg_Finelame.append(i)
+    sorted_jpg = natsorted(jpg_Finelame)
+
+
+
     with open(pdf_FileName,"wb") as f:
         # 画像フォルダの中にあるPNGファイルを取得し配列に追加、バイナリ形式でファイルに書き込む
-        f.write(img2pdf.convert([Image.open(png_Folder+j).filename for j in os.listdir(png_Folder)if j.endswith(extension)]))
+        f.write(img2pdf.convert([Image.open(png_Folder+j).filename for j in sorted_jpg]))
+        #f.write(img2pdf.convert([Image.open(png_Folder+j).filename for j in os.listdir(png_Folder)if j.endswith(extension)]))
 
     print("PDF化完了しました")
 messagebox.showinfo("完了", "キャプチャが完了しました")
