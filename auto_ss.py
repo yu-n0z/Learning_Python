@@ -9,6 +9,7 @@ from PIL import Image # img2pdfと一緒にインストールされたPillowを�
 from tkinter import messagebox
 from natsort import natsorted
 
+
 #### 実行形式でのpath取得
 path_current_dir = os.path.dirname(sys.argv[0])
 
