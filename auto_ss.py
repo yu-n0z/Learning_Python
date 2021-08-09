@@ -11,8 +11,10 @@ from natsort import natsorted
 
 
 #### 実行形式でのpath取得
-path_current_dir = os.path.dirname(sys.argv[0])
+#path_current_dir = os.path.dirname(sys.argv[0])
 
+# script実行時のパス
+path_current_dir = os.path.dirname(os.path.abspath(__file__))
 Bookname = ""
 
 print('中断するにはCrt+Cを入力してください。\n')
@@ -72,8 +74,10 @@ except KeyboardInterrupt:
     print('\n終了')
     sys.exit()
 
-Savedir = path_current_dir + "/" + Bookname + "/"
+Savedir = path_current_dir + "/" + Bookname #+ "/"
 os.mkdir(Savedir)
+
+Savedir += "/"
 
 #### キャプチャ範囲の幅と高さを格納
 Width =  XRightLow - XLeftTop
