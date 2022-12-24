@@ -6,7 +6,7 @@ import numpy as np
 import cv2
 import img2pdf
 from PIL import Image # img2pdfと一緒にインストールされたPillowを使います
-from tkinter import messagebox
+#from tkinter import messagebox
 from natsort import natsorted
 
 
@@ -80,8 +80,8 @@ os.mkdir(Savedir)
 Savedir += "/"
 
 #### キャプチャ範囲の幅と高さを格納
-Width =  XRightLow - XLeftTop
-Height =  YRightLow - YLeftTop
+Width =  (XRightLow*2) - (XLeftTop*2)
+Height =  (YRightLow*2) - (YLeftTop*2)
 
 #### 実行開始までのwait
 time.sleep(5)
@@ -89,10 +89,12 @@ time.sleep(5)
 Pagecount = 1
 
 while True:
-    time.sleep(0.3)
+    time.sleep(0.5)
+
+    
     Pagenum = str(Pagecount).zfill(4)
     # #region = (左からの配置位置, 上からの配置位置, 幅, 高さ)
-    SS = gui.screenshot(region = (XLeftTop,YLeftTop,Width,Height))
+    SS = gui.screenshot(region = (XLeftTop*2,YLeftTop*2,Width,Height))
     if Fileflg == "2" :
         SS = SS.convert('RGB')
 
@@ -102,7 +104,7 @@ while True:
         # 前回のキャプチャ内容と今回のキャプチャを比較、一致したあと再度比較し終了判定へ
         if np.array_equal(SS,BeforeSS):#pylint: disable-this-line-in-some-way
             time.sleep(3)
-            SS = gui.screenshot(region = (XLeftTop,YLeftTop,Width,Height))
+            SS = gui.screenshot(region = (XLeftTop*2,YLeftTop*2,Width,Height))
             if Fileflg == "2" :
                 SS = SS.convert('RGB')
 
@@ -145,4 +147,4 @@ if Fileflg =="2":
         #f.write(img2pdf.convert([Image.open(png_Folder+j).filename for j in os.listdir(png_Folder)if j.endswith(extension)]))
 
     print("PDF化完了しました")
-messagebox.showinfo("完了", "キャプチャが完了しました")
+#messagebox.showinfo("完了", "キャプチャが完了しました")
